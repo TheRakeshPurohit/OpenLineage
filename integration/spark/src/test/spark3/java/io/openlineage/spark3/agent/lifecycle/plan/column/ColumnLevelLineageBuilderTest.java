@@ -1,6 +1,10 @@
+<<<<<<< HEAD:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/ColumnLevelLineageBuilderTest.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/ColumnLevelLineageBuilderTest.java
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,30 +12,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.openlineage.client.OpenLineage;
-import io.openlineage.spark.agent.client.OpenLineageClient;
+import io.openlineage.spark.agent.EventEmitter;
 import io.openlineage.spark.agent.util.DatasetIdentifier;
 import io.openlineage.spark.api.OpenLineageContext;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.spark.sql.catalyst.expressions.ExprId;
-import org.apache.spark.sql.types.IntegerType$;
-import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import scala.collection.immutable.HashMap;
 
 class ColumnLevelLineageBuilderTest {
 
   OpenLineageContext context = mock(OpenLineageContext.class);
-  OpenLineage openLineage = new OpenLineage(OpenLineageClient.OPEN_LINEAGE_CLIENT_URI);
-  StructType schema =
-      new StructType(
-          new StructField[] {
-            new StructField("a", IntegerType$.MODULE$, false, new Metadata(new HashMap<>())),
-            new StructField("b", IntegerType$.MODULE$, false, new Metadata(new HashMap<>()))
-          });
+  OpenLineage openLineage = new OpenLineage(EventEmitter.OPEN_LINEAGE_PRODUCER_URI);
+  OpenLineage.SchemaDatasetFacet schema =
+      openLineage.newSchemaDatasetFacet(
+          Arrays.asList(
+              openLineage.newSchemaDatasetFacetFieldsBuilder().name("a").type("int").build(),
+              openLineage.newSchemaDatasetFacetFieldsBuilder().name("b").type("int").build()));
   ColumnLevelLineageBuilder builder = new ColumnLevelLineageBuilder(schema, context);
 
   ExprId rootExprId = mock(ExprId.class);

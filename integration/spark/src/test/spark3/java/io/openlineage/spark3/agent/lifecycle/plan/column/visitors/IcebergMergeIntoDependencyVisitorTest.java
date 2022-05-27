@@ -1,6 +1,10 @@
+<<<<<<< HEAD:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/customVisitors/IcebergMergeIntoDependencyVisitorTest.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage.customVisitors;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column.visitors;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/visitors/IcebergMergeIntoDependencyVisitorTest.java
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -9,8 +13,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 import static scala.collection.JavaConverters.collectionAsScalaIterableConverter;
 
-import io.openlineage.spark3.agent.lifecycle.plan.columnLineage.ColumnLevelLineageBuilder;
-import io.openlineage.spark3.agent.lifecycle.plan.columnLineage.ExpressionDependencyCollector;
+import io.openlineage.spark3.agent.lifecycle.plan.column.ColumnLevelLineageBuilder;
+import io.openlineage.spark3.agent.lifecycle.plan.column.ExpressionDependencyCollector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

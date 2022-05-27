@@ -1,11 +1,15 @@
+<<<<<<< HEAD:integration/spark/src/main/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/ExpressionDependencyCollector.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/main/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/ExpressionDependencyCollector.java
 
 import io.openlineage.spark.agent.util.ScalaConversionUtils;
-import io.openlineage.spark3.agent.lifecycle.plan.columnLineage.customVisitors.ExpressionDependencyVisitor;
-import io.openlineage.spark3.agent.lifecycle.plan.columnLineage.customVisitors.IcebergMergeIntoDependencyVisitor;
-import io.openlineage.spark3.agent.lifecycle.plan.columnLineage.customVisitors.UnionDependencyVisitor;
+import io.openlineage.spark3.agent.lifecycle.plan.column.visitors.ExpressionDependencyVisitor;
+import io.openlineage.spark3.agent.lifecycle.plan.column.visitors.IcebergMergeIntoDependencyVisitor;
+import io.openlineage.spark3.agent.lifecycle.plan.column.visitors.UnionDependencyVisitor;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,15 +29,10 @@ import org.apache.spark.sql.catalyst.plans.logical.Project;
 @Slf4j
 public class ExpressionDependencyCollector {
 
-  private final LogicalPlan plan;
-  private final List<ExpressionDependencyVisitor> expressionDependencyVisitors =
+  private static final List<ExpressionDependencyVisitor> expressionDependencyVisitors =
       Arrays.asList(new UnionDependencyVisitor(), new IcebergMergeIntoDependencyVisitor());
 
-  ExpressionDependencyCollector(LogicalPlan plan) {
-    this.plan = plan;
-  }
-
-  void collect(ColumnLevelLineageBuilder builder) {
+  static void collect(LogicalPlan plan, ColumnLevelLineageBuilder builder) {
     plan.foreach(
         node -> {
           expressionDependencyVisitors.stream()

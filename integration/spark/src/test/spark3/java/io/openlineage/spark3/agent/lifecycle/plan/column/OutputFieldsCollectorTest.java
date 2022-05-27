@@ -1,6 +1,10 @@
+<<<<<<< HEAD:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/OutputFieldsCollectorTest.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/OutputFieldsCollectorTest.java
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -22,7 +26,6 @@ import scala.collection.Seq$;
 public class OutputFieldsCollectorTest {
 
   LogicalPlan plan = mock(LogicalPlan.class);
-  OutputFieldsCollector collector = new OutputFieldsCollector(plan);
   ColumnLevelLineageBuilder builder = mock(ColumnLevelLineageBuilder.class);
 
   Attribute attr1 = mock(Attribute.class);
@@ -52,7 +55,7 @@ public class OutputFieldsCollectorTest {
   public void verifyOutputAttributeIsCollected() {
     when(plan.output()).thenReturn(attrs);
 
-    collector.collect(builder);
+    OutputFieldsCollector.collect(plan, builder);
 
     Mockito.verify(builder, times(1)).addOutput(exprId1, "name1");
     Mockito.verify(builder, times(1)).addOutput(exprId2, "name2");
@@ -75,7 +78,7 @@ public class OutputFieldsCollectorTest {
                 .asScala()
                 .toSeq());
 
-    new OutputFieldsCollector(aggregate).collect(builder);
+    OutputFieldsCollector.collect(aggregate, builder);
 
     Mockito.verify(builder, times(1)).addOutput(exprId, "some-name");
   }
@@ -97,7 +100,7 @@ public class OutputFieldsCollectorTest {
                 .asScala()
                 .toSeq());
 
-    new OutputFieldsCollector(project).collect(builder);
+    OutputFieldsCollector.collect(project, builder);
 
     Mockito.verify(builder, times(1)).addOutput(exprId, "some-name");
   }
@@ -116,7 +119,7 @@ public class OutputFieldsCollectorTest {
                 .asScala()
                 .toSeq());
 
-    new OutputFieldsCollector(plan).collect(builder);
+    OutputFieldsCollector.collect(plan, builder);
 
     Mockito.verify(builder, times(1)).addOutput(exprId1, "name1");
     Mockito.verify(builder, times(1)).addOutput(exprId2, "name2");

@@ -1,6 +1,10 @@
+<<<<<<< HEAD:integration/spark/src/main/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/InputFieldsCollector.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/main/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/InputFieldsCollector.java
 
 import io.openlineage.spark.agent.lifecycle.Rdds;
 import io.openlineage.spark.agent.util.DatasetIdentifier;
@@ -29,34 +33,24 @@ import org.apache.spark.sql.execution.datasources.v2.DataSourceV2ScanRelation;
 @Slf4j
 class InputFieldsCollector {
 
-  private final LogicalPlan plan;
-  private final OpenLineageContext context;
+  static void collect(
+      OpenLineageContext context, LogicalPlan plan, ColumnLevelLineageBuilder builder) {
+    discoverInputsFromNode(context, plan, builder);
 
-  InputFieldsCollector(LogicalPlan plan, OpenLineageContext context) {
-    this.plan = plan;
-    this.context = context;
-  }
-
-  void collect(ColumnLevelLineageBuilder builder) {
-    collect(plan, builder);
-  }
-
-  void collect(LogicalPlan node, ColumnLevelLineageBuilder builder) {
-    discoverInputsFromNode(node, builder);
-
-    // hacky way to replace `node instanceof UnaryNode` which fails for Spark 3.2.1
+    // hacky way to replace `plan instanceof UnaryNode` which fails for Spark 3.2.1
     // because of java.lang.IncompatibleClassChangeError: UnaryNode, but class was expected
     // probably related to single code base for different Spark versions
-    if ((node.getClass()).isAssignableFrom(UnaryNode.class)) {
-      collect(((UnaryNode) node).child(), builder);
-    } else if (node.children() != null) {
-      ScalaConversionUtils.<LogicalPlan>fromSeq(node.children()).stream()
-          .forEach(child -> collect(child, builder));
+    if ((plan.getClass()).isAssignableFrom(UnaryNode.class)) {
+      collect(context, ((UnaryNode) plan).child(), builder);
+    } else if (plan.children() != null) {
+      ScalaConversionUtils.<LogicalPlan>fromSeq(plan.children()).stream()
+          .forEach(child -> collect(context, child, builder));
     }
   }
 
-  private void discoverInputsFromNode(LogicalPlan node, ColumnLevelLineageBuilder builder) {
-    extractDatasetIdentifier(node).stream()
+  private static void discoverInputsFromNode(
+      OpenLineageContext context, LogicalPlan node, ColumnLevelLineageBuilder builder) {
+    extractDatasetIdentifier(context, node).stream()
         .forEach(
             di ->
                 ScalaConversionUtils.fromSeq(node.output()).stream()
@@ -65,11 +59,12 @@ class InputFieldsCollector {
                     .forEach(attr -> builder.addInput(attr.exprId(), di, attr.name())));
   }
 
-  private List<DatasetIdentifier> extractDatasetIdentifier(LogicalPlan node) {
+  private static List<DatasetIdentifier> extractDatasetIdentifier(
+      OpenLineageContext context, LogicalPlan node) {
     if (node instanceof DataSourceV2Relation) {
-      return extractDatasetIdentifier((DataSourceV2Relation) node);
+      return extractDatasetIdentifier(context, (DataSourceV2Relation) node);
     } else if (node instanceof DataSourceV2ScanRelation) {
-      return extractDatasetIdentifier(((DataSourceV2ScanRelation) node).relation());
+      return extractDatasetIdentifier(context, ((DataSourceV2ScanRelation) node).relation());
     } else if (node instanceof HiveTableRelation) {
       return extractDatasetIdentifier(((HiveTableRelation) node).tableMeta());
     } else if (node instanceof LogicalRelation
@@ -83,7 +78,7 @@ class InputFieldsCollector {
     return Collections.emptyList();
   }
 
-  private List<DatasetIdentifier> extractDatasetIdentifier(LogicalRDD logicalRDD) {
+  private static List<DatasetIdentifier> extractDatasetIdentifier(LogicalRDD logicalRDD) {
     List<RDD<?>> fileLikeRdds = Rdds.findFileLikeRdds(logicalRDD.rdd());
     return PlanUtils.findRDDPaths(fileLikeRdds).stream()
         .map(
@@ -92,13 +87,14 @@ class InputFieldsCollector {
         .collect(Collectors.toList());
   }
 
-  private List<DatasetIdentifier> extractDatasetIdentifier(DataSourceV2Relation relation) {
+  private static List<DatasetIdentifier> extractDatasetIdentifier(
+      OpenLineageContext context, DataSourceV2Relation relation) {
     return PlanUtils3.getDatasetIdentifier(context, relation)
         .map(Collections::singletonList)
         .orElse(Collections.emptyList());
   }
 
-  private List<DatasetIdentifier> extractDatasetIdentifier(CatalogTable catalogTable) {
+  private static List<DatasetIdentifier> extractDatasetIdentifier(CatalogTable catalogTable) {
     URI location = catalogTable.location();
     if (location == null) {
       return Collections.emptyList();

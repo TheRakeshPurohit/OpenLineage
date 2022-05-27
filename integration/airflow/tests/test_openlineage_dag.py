@@ -235,7 +235,6 @@ def test_openlineage_dag(
                 'unknownSourceAttribute': UnknownOperatorAttributeRunFacet(
                     unknownItems=[UnknownOperatorInstance(name='DummyOperator',
                                                           properties=mock.ANY)])
-
             }),
             job=Job("default", job_id_failed),
             producer=PRODUCER,
@@ -518,16 +517,7 @@ def test_openlineage_dag_with_extractor(
         RunEvent(
             RunState.COMPLETE,
             mock.ANY,
-            Run(run_id, {
-                'unknownSourceAttribute': UnknownOperatorAttributeRunFacet(
-                    unknownItems=[
-                        UnknownOperatorInstance(
-                            name='TestFixtureDummyOperator',
-                            properties=mock.ANY
-                        )
-                    ]
-                )
-            }),
+            Run(run_id),
             Job("default", job_id),
             PRODUCER,
             [],
@@ -601,14 +591,6 @@ def test_openlineage_dag_with_extract_on_complete(
                     runId=parent_run_id,
                     namespace=DAG_NAMESPACE,
                     name=dag_id
-                ),
-                'unknownSourceAttribute': UnknownOperatorAttributeRunFacet(
-                    unknownItems=[
-                        UnknownOperatorInstance(
-                            name='TestFixtureDummyOperator',
-                            properties=mock.ANY
-                        )
-                    ]
                 )
             }),
             job=Job("default", job_id, {

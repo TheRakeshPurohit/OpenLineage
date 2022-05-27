@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 import io.openlineage.client.OpenLineage;
 import io.openlineage.client.OpenLineage.OutputDataset;
-import io.openlineage.spark.agent.client.OpenLineageClient;
+import io.openlineage.spark.agent.EventEmitter;
 import io.openlineage.spark.agent.util.PlanUtils;
 import io.openlineage.spark.api.DatasetFactory;
 import io.openlineage.spark.api.OpenLineageContext;
@@ -61,7 +61,7 @@ class LogicalRelationDatasetBuilderTest {
   public void setUp() {
     when(session.sparkContext()).thenReturn(mock(SparkContext.class));
     when(openLineageContext.getOpenLineage())
-        .thenReturn(new OpenLineage(OpenLineageClient.OPEN_LINEAGE_CLIENT_URI));
+        .thenReturn(new OpenLineage(EventEmitter.OPEN_LINEAGE_PRODUCER_URI));
   }
 
   @ParameterizedTest
@@ -73,7 +73,7 @@ class LogicalRelationDatasetBuilderTest {
         "mysql://localhost/sparkdata"
       })
   void testApply(String connectionUri) {
-    OpenLineage openLineage = new OpenLineage(OpenLineageClient.OPEN_LINEAGE_CLIENT_URI);
+    OpenLineage openLineage = new OpenLineage(EventEmitter.OPEN_LINEAGE_PRODUCER_URI);
     String jdbcUrl = "jdbc:" + connectionUri;
     String sparkTableName = "my_spark_table";
     JDBCRelation relation =

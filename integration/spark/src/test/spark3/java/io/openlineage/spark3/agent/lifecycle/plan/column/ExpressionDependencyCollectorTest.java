@@ -1,6 +1,10 @@
+<<<<<<< HEAD:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/ExpressionDependencyCollectorTest.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/ExpressionDependencyCollectorTest.java
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -70,8 +74,7 @@ public class ExpressionDependencyCollectorTest {
             mock(LogicalPlan.class));
     LogicalPlan plan = new CreateTableAsSelect(null, null, null, project, null, null, false);
 
-    ExpressionDependencyCollector collector = new ExpressionDependencyCollector(plan);
-    collector.collect(builder);
+    ExpressionDependencyCollector.collect(plan, builder);
 
     verify(builder, times(1)).addDependency(aliasExprId1, exprId1);
     verify(builder, times(1)).addDependency(aliasExprId2, exprId2);
@@ -86,8 +89,7 @@ public class ExpressionDependencyCollectorTest {
             mock(LogicalPlan.class));
     LogicalPlan plan = new CreateTableAsSelect(null, null, null, aggregate, null, null, false);
 
-    ExpressionDependencyCollector collector = new ExpressionDependencyCollector(plan);
-    collector.collect(builder);
+    ExpressionDependencyCollector.collect(plan, builder);
 
     verify(builder, times(1)).addDependency(aliasExprId1, exprId1);
   }
@@ -123,8 +125,7 @@ public class ExpressionDependencyCollectorTest {
     Project project = new Project(toScalaSeq(Arrays.asList(rootAlias)), mock(LogicalPlan.class));
     LogicalPlan plan = new CreateTableAsSelect(null, null, null, project, null, null, false);
 
-    ExpressionDependencyCollector collector = new ExpressionDependencyCollector(plan);
-    collector.collect(builder);
+    ExpressionDependencyCollector.collect(plan, builder);
 
     verify(builder, times(1)).addDependency(rootAliasExprId, exprId1);
     verify(builder, times(1)).addDependency(rootAliasExprId, exprId2);

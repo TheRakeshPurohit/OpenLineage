@@ -1,6 +1,10 @@
+<<<<<<< HEAD:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/InputFieldsCollectorTest.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/InputFieldsCollectorTest.java
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -61,7 +65,6 @@ public class InputFieldsCollectorTest {
   public void collectWhenGrandChildNodeIsDataSourceV2Relation() {
     DataSourceV2Relation relation = mock(DataSourceV2Relation.class);
     LogicalPlan plan = createPlanWithGrandChild(relation);
-    InputFieldsCollector collector = new InputFieldsCollector(plan, context);
 
     when(relation.output())
         .thenReturn(
@@ -72,7 +75,7 @@ public class InputFieldsCollectorTest {
 
     try (MockedStatic mocked = mockStatic(PlanUtils3.class)) {
       when(PlanUtils3.getDatasetIdentifier(context, relation)).thenReturn(Optional.of(di));
-      collector.collect(builder);
+      InputFieldsCollector.collect(context, plan, builder);
     }
     verify(builder, times(1)).addInput(exprId, di, "some-name");
   }
@@ -84,7 +87,6 @@ public class InputFieldsCollectorTest {
     when(scanRelation.relation()).thenReturn(relation);
 
     LogicalPlan plan = createPlanWithGrandChild(scanRelation);
-    InputFieldsCollector collector = new InputFieldsCollector(plan, context);
 
     when(scanRelation.output())
         .thenReturn(
@@ -95,7 +97,7 @@ public class InputFieldsCollectorTest {
 
     try (MockedStatic mocked = mockStatic(PlanUtils3.class)) {
       when(PlanUtils3.getDatasetIdentifier(context, relation)).thenReturn(Optional.of(di));
-      collector.collect(builder);
+      InputFieldsCollector.collect(context, plan, builder);
     }
     verify(builder, times(1)).addInput(exprId, di, "some-name");
   }
@@ -110,7 +112,6 @@ public class InputFieldsCollectorTest {
     when(catalogTable.location()).thenReturn(uri);
 
     LogicalPlan plan = createPlanWithGrandChild(relation);
-    InputFieldsCollector collector = new InputFieldsCollector(plan, context);
 
     when(relation.output())
         .thenReturn(
@@ -119,7 +120,7 @@ public class InputFieldsCollectorTest {
                 .asScala()
                 .toSeq());
 
-    collector.collect(builder);
+    InputFieldsCollector.collect(context, plan, builder);
     verify(builder, times(1)).addInput(exprId, new DatasetIdentifier("/tmp", "file"), "some-name");
   }
 
@@ -134,7 +135,6 @@ public class InputFieldsCollectorTest {
     when(relation.rdd()).thenReturn(rdd);
 
     LogicalPlan plan = createPlanWithGrandChild(relation);
-    InputFieldsCollector collector = new InputFieldsCollector(plan, context);
 
     when(relation.output())
         .thenReturn(
@@ -149,7 +149,7 @@ public class InputFieldsCollectorTest {
         when(PlanUtils.findRDDPaths(listRDD)).thenReturn(Collections.singletonList(path));
         when(PlanUtils.namespaceUri(path.toUri())).thenReturn("file");
 
-        collector.collect(builder);
+        InputFieldsCollector.collect(context, plan, builder);
         verify(builder, times(1))
             .addInput(exprId, new DatasetIdentifier("/tmp", "file"), "some-name");
       }
@@ -166,7 +166,6 @@ public class InputFieldsCollectorTest {
     when(catalogTable.location()).thenReturn(uri);
 
     LogicalPlan plan = createPlanWithGrandChild(relation);
-    InputFieldsCollector collector = new InputFieldsCollector(plan, context);
 
     when(relation.output())
         .thenReturn(
@@ -175,7 +174,7 @@ public class InputFieldsCollectorTest {
                 .asScala()
                 .toSeq());
 
-    collector.collect(builder);
+    InputFieldsCollector.collect(context, plan, builder);
     verify(builder, times(1)).addInput(exprId, new DatasetIdentifier("/tmp", "file"), "some-name");
   }
 
@@ -186,7 +185,6 @@ public class InputFieldsCollectorTest {
     when(relation.catalogTable()).thenReturn(Option.empty());
 
     LogicalPlan plan = createPlanWithGrandChild(relation);
-    InputFieldsCollector collector = new InputFieldsCollector(plan, context);
 
     when(relation.output())
         .thenReturn(
@@ -195,7 +193,7 @@ public class InputFieldsCollectorTest {
                 .asScala()
                 .toSeq());
 
-    collector.collect(builder);
+    InputFieldsCollector.collect(context, plan, builder);
     verify(builder, times(0)).addInput(any(), any(), any());
   }
 
@@ -208,7 +206,6 @@ public class InputFieldsCollectorTest {
     when(catalogTable.location()).thenReturn(null);
 
     LogicalPlan plan = createPlanWithGrandChild(relation);
-    InputFieldsCollector collector = new InputFieldsCollector(plan, context);
 
     when(relation.output())
         .thenReturn(
@@ -217,7 +214,7 @@ public class InputFieldsCollectorTest {
                 .asScala()
                 .toSeq());
 
-    collector.collect(builder);
+    InputFieldsCollector.collect(context, plan, builder);
     verify(builder, times(0)).addInput(any(), any(), any());
   }
 

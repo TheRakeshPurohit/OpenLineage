@@ -9,8 +9,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.openlineage.client.OpenLineage;
+import io.openlineage.spark.agent.EventEmitter;
 import io.openlineage.spark.agent.SparkAgentTestExtension;
-import io.openlineage.spark.agent.client.OpenLineageClient;
 import io.openlineage.spark.agent.util.ScalaConversionUtils;
 import io.openlineage.spark.api.DatasetFactory;
 import io.openlineage.spark.api.OpenLineageContext;
@@ -53,7 +53,7 @@ class LogicalRDDVisitorTest {
   @BeforeEach
   public void setUp() {
     when(context.getOpenLineage())
-        .thenReturn(new OpenLineage(OpenLineageClient.OPEN_LINEAGE_CLIENT_URI));
+        .thenReturn(new OpenLineage(EventEmitter.OPEN_LINEAGE_PRODUCER_URI));
   }
 
   @AfterEach

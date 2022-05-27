@@ -2,7 +2,7 @@
 
 /* SPDX-License-Identifier: Apache-2.0 */
 
-package io.openlineage.spark.agent.client;
+package io.openlineage.spark.agent.lifecycle;
 
 import java.net.URI;
 import lombok.Value;

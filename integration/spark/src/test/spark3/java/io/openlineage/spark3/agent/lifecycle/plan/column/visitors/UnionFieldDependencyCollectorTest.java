@@ -1,6 +1,10 @@
+<<<<<<< HEAD:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/customVisitors/UnionFieldDependencyCollectorTest.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage.customVisitors;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column.visitors;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/visitors/UnionFieldDependencyCollectorTest.java
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import io.openlineage.spark3.agent.lifecycle.plan.columnLineage.ColumnLevelLineageBuilder;
+import io.openlineage.spark3.agent.lifecycle.plan.column.ColumnLevelLineageBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.spark.sql.catalyst.expressions.AttributeReference;

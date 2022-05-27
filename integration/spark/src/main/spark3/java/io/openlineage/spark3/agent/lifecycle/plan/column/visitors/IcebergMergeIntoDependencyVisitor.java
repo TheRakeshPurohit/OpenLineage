@@ -1,11 +1,15 @@
+<<<<<<< HEAD:integration/spark/src/main/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/customVisitors/IcebergMergeIntoDependencyVisitor.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage.customVisitors;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column.visitors;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/main/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/visitors/IcebergMergeIntoDependencyVisitor.java
 
-import static io.openlineage.spark3.agent.lifecycle.plan.columnLineage.ExpressionDependencyCollector.traverseExpression;
+import static io.openlineage.spark3.agent.lifecycle.plan.column.ExpressionDependencyCollector.traverseExpression;
 
 import io.openlineage.spark.agent.util.ScalaConversionUtils;
-import io.openlineage.spark3.agent.lifecycle.plan.columnLineage.ColumnLevelLineageBuilder;
+import io.openlineage.spark3.agent.lifecycle.plan.column.ColumnLevelLineageBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

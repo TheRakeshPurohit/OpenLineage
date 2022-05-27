@@ -5,7 +5,7 @@
 package io.openlineage.spark.agent.util;
 
 import io.openlineage.client.OpenLineage;
-import io.openlineage.spark.agent.client.OpenLineageClient;
+import io.openlineage.spark.agent.EventEmitter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -168,7 +168,7 @@ public class PlanUtils {
    */
   public static OpenLineage.ParentRunFacet parentRunFacet(
       UUID parentRunId, String parentJob, String parentJobNamespace) {
-    return new OpenLineage(OpenLineageClient.OPEN_LINEAGE_CLIENT_URI)
+    return new OpenLineage(EventEmitter.OPEN_LINEAGE_PRODUCER_URI)
         .newParentRunFacetBuilder()
         .run(new OpenLineage.ParentRunFacetRunBuilder().runId(parentRunId).build())
         .job(

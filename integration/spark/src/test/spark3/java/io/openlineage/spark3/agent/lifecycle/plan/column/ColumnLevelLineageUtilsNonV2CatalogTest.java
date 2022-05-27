@@ -1,15 +1,20 @@
+<<<<<<< HEAD:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/ColumnLevelLineageUtilsNonV2CatalogTest.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/test/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/ColumnLevelLineageUtilsNonV2CatalogTest.java
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.openlineage.client.OpenLineage;
-import io.openlineage.spark.agent.client.OpenLineageClient;
+import io.openlineage.spark.agent.EventEmitter;
 import io.openlineage.spark.api.OpenLineageContext;
 import io.openlineage.spark3.agent.utils.LastQueryExecutionSparkEventListener;
+import java.util.Arrays;
 import java.util.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,15 +24,10 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.SparkSession$;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.execution.QueryExecution;
-import org.apache.spark.sql.types.IntegerType$;
-import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import scala.collection.immutable.HashMap;
 
 @Slf4j
 public class ColumnLevelLineageUtilsNonV2CatalogTest {
@@ -36,12 +36,12 @@ public class ColumnLevelLineageUtilsNonV2CatalogTest {
   OpenLineageContext context;
   QueryExecution queryExecution = mock(QueryExecution.class);
 
-  StructType schema =
-      new StructType(
-          new StructField[] {
-            new StructField("a", IntegerType$.MODULE$, false, new Metadata(new HashMap<>())),
-            new StructField("b", IntegerType$.MODULE$, false, new Metadata(new HashMap<>()))
-          });
+  OpenLineage openLineage = new OpenLineage(EventEmitter.OPEN_LINEAGE_PRODUCER_URI);
+  OpenLineage.SchemaDatasetFacet schemaDatasetFacet =
+      openLineage.newSchemaDatasetFacet(
+          Arrays.asList(
+              openLineage.newSchemaDatasetFacetFieldsBuilder().name("a").type("int").build(),
+              openLineage.newSchemaDatasetFacetFieldsBuilder().name("b").type("int").build()));
 
   @BeforeAll
   @SneakyThrows
@@ -73,7 +73,7 @@ public class ColumnLevelLineageUtilsNonV2CatalogTest {
         OpenLineageContext.builder()
             .sparkSession(Optional.of(spark))
             .sparkContext(spark.sparkContext())
-            .openLineage(new OpenLineage(OpenLineageClient.OPEN_LINEAGE_CLIENT_URI))
+            .openLineage(new OpenLineage(EventEmitter.OPEN_LINEAGE_PRODUCER_URI))
             .queryExecution(queryExecution)
             .build();
 
@@ -94,7 +94,7 @@ public class ColumnLevelLineageUtilsNonV2CatalogTest {
     LogicalPlan plan = LastQueryExecutionSparkEventListener.getLastExecutedLogicalPlan().get();
     when(queryExecution.optimizedPlan()).thenReturn(plan);
     OpenLineage.ColumnLineageDatasetFacet facet =
-        ColumnLevelLineageUtils.buildColumnLineageDatasetFacet(context, schema).get();
+        ColumnLevelLineageUtils.buildColumnLineageDatasetFacet(context, schemaDatasetFacet).get();
 
     assertColumnDependsOn(facet, "a", "file", "column_non_v2/t1", "a");
     assertColumnDependsOn(facet, "b", "file", "column_non_v2/t1", "b");
@@ -110,7 +110,7 @@ public class ColumnLevelLineageUtilsNonV2CatalogTest {
     LogicalPlan plan = LastQueryExecutionSparkEventListener.getLastExecutedLogicalPlan().get();
     when(queryExecution.optimizedPlan()).thenReturn(plan);
     OpenLineage.ColumnLineageDatasetFacet facet =
-        ColumnLevelLineageUtils.buildColumnLineageDatasetFacet(context, schema).get();
+        ColumnLevelLineageUtils.buildColumnLineageDatasetFacet(context, schemaDatasetFacet).get();
 
     assertColumnDependsOn(facet, "a", "file", "column_non_v2/t1", "a");
     assertColumnDependsOn(facet, "b", "file", "column_non_v2/t1", "b");

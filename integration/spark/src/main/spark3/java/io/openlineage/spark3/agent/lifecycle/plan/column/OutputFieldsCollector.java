@@ -1,6 +1,10 @@
+<<<<<<< HEAD:integration/spark/src/main/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/columnLineage/OutputFieldsCollector.java
 /* Copyright 2018-2022 contributors to the OpenLineage project */
 
 package io.openlineage.spark3.agent.lifecycle.plan.columnLineage;
+=======
+package io.openlineage.spark3.agent.lifecycle.plan.column;
+>>>>>>> 91dc08f00207d1a9de55aa24e6a41744a58e1b2d:integration/spark/src/main/spark3/java/io/openlineage/spark3/agent/lifecycle/plan/column/OutputFieldsCollector.java
 
 import io.openlineage.spark.agent.util.ScalaConversionUtils;
 import java.util.List;
@@ -14,17 +18,7 @@ import org.apache.spark.sql.catalyst.plans.logical.Project;
 /** Class created to collect output fields with the corresponding ExprId from LogicalPlan. */
 class OutputFieldsCollector {
 
-  private final LogicalPlan plan;
-
-  OutputFieldsCollector(LogicalPlan plan) {
-    this.plan = plan;
-  }
-
-  void collect(ColumnLevelLineageBuilder builder) {
-    collect(plan, builder);
-  }
-
-  private void collect(LogicalPlan plan, ColumnLevelLineageBuilder builder) {
+  static void collect(LogicalPlan plan, ColumnLevelLineageBuilder builder) {
     List<NamedExpression> expressions =
         ScalaConversionUtils.fromSeq(plan.output()).stream()
             .filter(attr -> attr instanceof Attribute)
