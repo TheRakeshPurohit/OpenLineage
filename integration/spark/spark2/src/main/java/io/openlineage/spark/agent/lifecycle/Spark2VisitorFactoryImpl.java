@@ -7,7 +7,7 @@ import io.openlineage.client.OpenLineage;
 import io.openlineage.client.OpenLineage.OutputDataset;
 import io.openlineage.spark.api.DatasetFactory;
 import io.openlineage.spark.api.OpenLineageContext;
-import io.openlineage.spark.agent.lifecycle.plan.CreateTableLikeCommandVisitor;
+import io.openlineage.spark2.agent.lifecycle.plan.CreateTableLikeCommandVisitor;
 import java.util.List;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import scala.PartialFunction;
