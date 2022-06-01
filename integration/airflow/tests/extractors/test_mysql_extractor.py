@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0.
 
-import os
 from unittest import mock
 
 import pytest
@@ -100,11 +99,11 @@ TASK = MySqlOperator(
 )
 
 
-@mock.patch('openlineage.airflow.extractors.mysql_extractor.MySqlExtractor._get_table_schemas')  # noqa
+@mock.patch('openlineage.airflow.extractors.mysql_extractor.get_table_schemas')  # noqa
 @mock.patch('openlineage.airflow.extractors.mysql_extractor.get_connection')
 def test_extract(get_connection, mock_get_table_schemas):
     mock_get_table_schemas.side_effect = \
-        [[DB_TABLE_SCHEMA], NO_DB_TABLE_SCHEMA]
+        [{"discounts": DB_TABLE_SCHEMA}, NO_DB_TABLE_SCHEMA]
 
     conn = Connection(
         conn_id=CONN_ID,
@@ -134,12 +133,12 @@ def test_extract(get_connection, mock_get_table_schemas):
     assert task_metadata.outputs == []
 
 
-@mock.patch('openlineage.airflow.extractors.mysql_extractor.MySqlExtractor._get_table_schemas')  # noqa
+@mock.patch('openlineage.airflow.extractors.mysql_extractor.get_table_schemas')  # noqa
 @mock.patch('openlineage.airflow.extractors.mysql_extractor.get_connection')
 def test_extract_authority_uri(get_connection, mock_get_table_schemas):
 
     mock_get_table_schemas.side_effect = \
-        [[DB_TABLE_SCHEMA], NO_DB_TABLE_SCHEMA]
+        [{"discounts": DB_TABLE_SCHEMA}, NO_DB_TABLE_SCHEMA]
 
     conn = Connection()
     conn.parse_from_uri(uri=CONN_URI)
@@ -161,31 +160,6 @@ def test_extract_authority_uri(get_connection, mock_get_table_schemas):
     assert task_metadata.name == f"{DAG_ID}.{TASK_ID}"
     assert task_metadata.inputs == expected_inputs
     assert task_metadata.outputs == []
-
-
-@mock.patch('MySQLdb.connect')
-def test_get_table_schemas(mock_conn):
-    # (1) Mock calls to mysql
-    rows = [
-        (DB_SCHEMA_NAME, DB_TABLE_NAME.name, 'id', 1, 'integer'),
-        (DB_SCHEMA_NAME, DB_TABLE_NAME.name, 'amount_off', 2, 'integer'),
-        (DB_SCHEMA_NAME, DB_TABLE_NAME.name, 'customer_email', 3, 'text'),
-        (DB_SCHEMA_NAME, DB_TABLE_NAME.name, 'starts_on', 4, 'timestamp'),
-        (DB_SCHEMA_NAME, DB_TABLE_NAME.name, 'ends_on', 5, 'timestamp')
-    ]
-
-    mock_conn.return_value \
-        .cursor.return_value \
-        .fetchall.return_value = rows
-
-    # (2) Set the environment variable for the connection
-    os.environ[f"AIRFLOW_CONN_{CONN_ID.upper()}"] = CONN_URI
-
-    # (3) Extract table schemas for task
-    extractor = MySqlExtractor(TASK)
-    table_schemas = extractor._get_table_schemas(table_names=[DB_TABLE_NAME])
-
-    assert table_schemas == [DB_TABLE_SCHEMA]
 
 
 def test_get_connection_import_returns_none_if_not_exists():
