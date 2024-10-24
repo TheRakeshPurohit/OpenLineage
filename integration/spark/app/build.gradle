@@ -30,9 +30,9 @@ ext {
     postgresqlVersion = '42.7.4'
     testcontainersVersion = '1.20.2'
     configurableTestConfig = [
-        sparkConfFile: project.findProperty('spark.conf.file') ?: System.getProperty('spark.conf.file'),
-        hostDir: project.findProperty('host.dir') ?: System.getProperty('host.dir'),
-        testDir: project.findProperty('test.dir') ?: System.getProperty('test.dir')
+            sparkConfFile: project.findProperty('spark.conf.file') ?: System.getProperty('spark.conf.file'),
+            hostDir      : project.findProperty('host.dir') ?: System.getProperty('host.dir'),
+            testDir      : project.findProperty('test.dir') ?: System.getProperty('test.dir')
     ]
     micrometerVersion = '1.13.5'
 }
@@ -119,7 +119,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:${mockitoVersion}")
     testImplementation("org.mockito:mockito-inline:${mockitoVersion}")
     testImplementation("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
-    testImplementation("com.databricks:databricks-sdk-java:0.4.0") {
+    testImplementation("com.databricks:databricks-sdk-java:0.32.2") {
         exclude group: 'com.fasterxml.jackson.core'
         exclude group: 'com.fasterxml.jackson.module'
     }
@@ -172,8 +172,17 @@ final def testResourcesDir = buildDirectory.dir("resources/test")
 final def libsShadowDir = buildDirectory.dir("libs/shadow")
 final def scalaFixturesJarName = "openlineage-spark-scala-fixtures_${scala}-${project.version}.jar"
 
+/**
+ The "test" task runs JUnit tests in a separate JVM, and by default, system properties (-D parameters)
+ are not forwarded to it.
+ Here we selectively create and pass properties that are used in the tests.
+ Apart from special technical properties, we pass all the system properties that start with "openlineage".
+ They are commonly used in {@link io.openlineage.spark.agent.DynamicParameter} interface implementations
+ to accept parameters.
+ */
 def testSystemProperties = { String spark, String scala ->
-    [
+    Map<String, String> openLineageSystemProperties = System.getProperties().findAll { key, value -> key.toString().startsWith("openlineage") }
+    openLineageSystemProperties + [
             "additional.conf.dir"                 : destAdditionalConfDir.get().asFile.absolutePath,
             "additional.jars.dir"                 : destAdditionalJarsDir.get().asFile.absolutePath,
             "build.dir"                           : buildDirectory.get().asFile.absolutePath,
@@ -408,7 +417,6 @@ tasks.register("databricksIntegrationTest", Test) {
     }
 }
 
-
 tasks.register("awsIntegrationTest", Test) {
     group = "verification"
     dependsOn(integrationTestDependencies)
@@ -416,16 +424,6 @@ tasks.register("awsIntegrationTest", Test) {
     classpath = files(tasks.shadowJar.outputs.files.singleFile, sourceSets.test.runtimeClasspath)
     useJUnitPlatform {
         includeTags("aws")
-    }
-    options {
-        /*
-        The "test" task runs JUnit tests in a separate JVM, and by default, system properties (-D parameters)
-        are not forwarded to it. Gradle allows forwarding them with -P parameter, but not everyone is aware of that.
-        Here, we selectively pass only properties that start with "openlineage" to avoid conflicts with
-        environment-related properties (e.g., current working directory) that could affect resource discovery.
-        The properties are later used in template resolution.
-         */
-        systemProperties = System.getProperties().findAll { key, value -> key.toString().startsWith("openlineage") }
     }
     testLogging {
         exceptionFormat "full"
